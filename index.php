@@ -6,6 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* CSS similaire à ce que vous avez fourni */
         body {
             font-family: 'Montserrat', sans-serif;
             margin: 0;
@@ -35,7 +36,7 @@
             transition: background-color 0.3s ease;
         }
         .home-symbol:hover {
-            background-color:#0066FF;
+            background-color: #0066FF;
         }
         .home-symbol i {
             margin-right: 0.5rem;
@@ -68,82 +69,23 @@
             transform: scale(1.05);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
-        .selection {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            text-align: center;
-            color: #333;
-            max-width: 400px;
-        }
-        .selection p {
-            margin: 0.5rem 0;
-        }
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: #000080;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #0066FF;
-            transform: translateY(-2px);
-        }
-        .btn:active {
-            transform: translateY(0);
-        }
     </style>
 </head>
 <body>
     <a href="home.php" class="home-symbol"><i class="fas fa-home"></i> HOME</a>
     <h1>Image Gallery</h1>
     <div class="gallery" id="gallery">
+        <?php
+        include 'connect.php'; // Connexion à la base de données
+
+        $result = $conn->query("SELECT ID, description, image FROM image");
+        while ($row = $result->fetch_assoc()) {
+            echo "<div>";
+            echo "<p>" . $row['description'] . "</p>";
+            echo "<img src='data:image/jpeg;base64," . base64_encode($row['image']) . "' alt='" . $row['description'] . "'>";
+            echo "</div>";
+        }
+        ?>
     </div>
-    <div class="selection" id="selection">
-        <p id="selectedImageText">No image selected</p>
-        <button class="btn" onclick="findSimilar()">Find Similar Images</button>
-    </div>
-
-    <script>
-        let selectedImageId = null;
-
-        function loadImages() {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', 'get_image.php', true);
-            xhr.onload = function() {
-                if (this.status === 200) {
-                    const images = JSON.parse(this.responseText);
-                    const gallery = document.getElementById('gallery');
-                    images.forEach(image => {
-                        const img = document.createElement('img');
-                        img.src = image.image_path;
-                        img.alt = 'Image';
-                        img.onclick = () => selectImage(image.id);
-                        gallery.appendChild(img);
-                    });
-                }
-            }
-            xhr.send();
-        }
-        function selectImage(imageId) {
-            selectedImageId = imageId;
-            document.getElementById('selectedImageText').textContent = 'Selected Image ID: ' + imageId;
-        }
-        function findSimilar() {
-            if (selectedImageId) {
-                window.location.href = 'find_similar.php?image_id=' + selectedImageId;
-            } else {
-                alert('Please select an image first.');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadImages);
-    </script>
 </body>
 </html>
