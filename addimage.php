@@ -1,21 +1,27 @@
 <?php
-// include 'connect.php';
+include 'connect.php';
 session_start();
 
-if(isset($_POST['ajouter'])){
-    $description = $_POST['description']; // changed from 'description' to 'desc'
+if (isset($_POST['ajouter'])) {
+    $description = $_POST['description'];
     $target_dir = "image/";
-    $image = $target_dir . basename($_FILES['image']["name"]); // changed from 'ID' to 'name'
+    $image = $target_dir . basename($_FILES['image']["name"]);
 
     if (move_uploaded_file($_FILES["image"]["tmp_name"], $image)) {
         // Use prepared statement to avoid SQL injection
-        $stmt = $conn->prepare("INSERT INTO stage (description, image) VALUES (?, ?)"); // removed extra '?'
-        $stmt->bind_param("ss", $description, $image); // removed extra 's'
+        $stmt = $connect->prepare("INSERT INTO produit (description, image) VALUES (?, ?)");
+        
+        // Check if the statement was prepared successfully
+        if ($stmt === false) {
+            die("Error preparing the statement: " . $connect->error);
+        }
+
+        $stmt->bind_param("ss", $description, $image);
 
         if ($stmt->execute()) {
-            echo "Formation ajoutée avec succès";
+            echo "Produit ajoutée avec succès";
         } else {
-            echo "Erreur lors de l'ajout de la formation : " . $conn->error;
+            echo "Erreur lors de l'ajout du produit : " . $stmt->error;
         }
         $stmt->close();
     } else {
@@ -36,12 +42,12 @@ if(isset($_POST['ajouter'])){
 <section class="joinus">
         <div class="joinus-heading">
         <h1>Ajouter un produit</h1>
-        <form action="addimage.php.php" method="post" enctype="multipart/form-data" >
+        <form action="addimage.php" method="post" enctype="multipart/form-data">
             <input type="text" name="description" placeholder="Description du produit"><br><br>
             <input type="file" name="image" placeholder="Image du produit"><br><br>
             <input type="submit" name="ajouter" value="Ajouter">
         </form>
         </div>
-        </section>
+</section>
 </body>
 </html>
