@@ -1,6 +1,6 @@
 <?php
     $servername = "localhost"; 
-    $username = "stage"; 
+    $username = "root"; 
     $password = ""; 
     $dbname = "stage"; 
     $conn = new mysqli($servername, $username, $password, $dbname);
