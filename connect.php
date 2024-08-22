@@ -1,7 +1,7 @@
 <?php
     $servername = "localhost"; 
-    $username = "stage"; 
-    $password = "password"; 
+    $username = "root"; 
+    $password = ""; 
     $dbname = "stage"; 
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
