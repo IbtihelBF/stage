@@ -35,10 +35,39 @@
             transition: background-color 0.3s ease;
         }
         .home-symbol:hover {
-            background-color:#0066FF;
+            background-color: #0066FF;
         }
         .home-symbol i {
             margin-right: 0.5rem;
+        }
+        .add-image-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 2rem; /* Adjust as needed for positioning */
+            background: linear-gradient(135deg, #0066FF, #004080);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            border: 1px solid #0056b3;
+        }
+        .add-image-button i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        .add-image-button:hover {
+            background: linear-gradient(135deg, #0056b3, #003d80);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+        }
+        .add-image-button:active {
+            transform: scale(1);
         }
         h1 {
             font-family: 'Pacifico', cursive;
@@ -58,17 +87,40 @@
             background: rgba(0, 0, 0, 0.45);
             border-radius: 8px;
         }
+        .gallery-item {
+            position: relative;
+        }
         .gallery img {
             width: 100%;
+            height: 150px;
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
+            object-fit: contain;
+            object-position: center;
+            background-color: #000;
         }
         .gallery img:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
-        .selection {
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            color: #ccc;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            opacity: 0.7;
+            transition: color 0.3s ease, opacity 0.3s ease;
+        }
+        .delete-btn:hover {
+            color: #0066FF;
+            opacity: 1;
+        }
+        .upload-section {
             margin-top: 2rem;
             padding: 1rem;
             background: rgba(255, 255, 255, 0.8);
@@ -77,8 +129,8 @@
             color: #333;
             max-width: 400px;
         }
-        .selection p {
-            margin: 0.5rem 0;
+        .upload-section input[type="file"] {
+            margin-top: 1rem;
         }
         .btn {
             display: inline-block;
@@ -102,48 +154,56 @@
 </head>
 <body>
     <a href="home.php" class="home-symbol"><i class="fas fa-home"></i> HOME</a>
+    <a href="addimage.php" class="add-image-button">
+        <i class="fas fa-plus-circle"></i> Add Image
+    </a>
     <h1>Image Gallery</h1>
     <div class="gallery" id="gallery">
+        <?php
+        include 'connect.php';
+        $result = $connect->query("SELECT * FROM produit");
+        while($row = $result->fetch_assoc()) {
+            echo '<div class="gallery-item">';
+            echo '<img src="' . $row['image'] . '" alt="Image" onclick="selectImage(' . $row['ID'] . ')">';
+            echo '<button class="delete-btn" onclick="deleteImage(' . $row['ID'] . ')"><i class="fas fa-trash-alt"></i></button>';
+            echo '</div>';
+        }
+        ?>
     </div>
-    <div class="selection" id="selection">
-        <p id="selectedImageText">No image selected</p>
-        <button class="btn" onclick="findSimilar()">Find Similar Images</button>
+    <div class="upload-section">
+        <p>Upload an image to find similar ones:</p>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button class="btn" onclick="uploadImage()">Find Similar Images</button>
     </div>
 
     <script>
-        let selectedImageId = null;
-
-        function loadImages() {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', 'get_image.php', true);
-            xhr.onload = function() {
-                if (this.status === 200) {
-                    const images = JSON.parse(this.responseText);
-                    const gallery = document.getElementById('gallery');
-                    images.forEach(image => {
-                        const img = document.createElement('img');
-                        img.src = image.image_path;
-                        img.alt = 'Image';
-                        img.onclick = () => selectImage(image.id);
-                        gallery.appendChild(img);
-                    });
+        function uploadImage() {
+            const fileInput = document.getElementById('imageUpload');
+            if (fileInput.files.length === 0) {
+                alert('Please upload an image first.');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            
+            fetch('upload_image.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Assuming upload_image.php returns an image ID or URL
+                if (data) {
+                    window.location.href = 'find_similar.php?image=' + encodeURIComponent(data);
+                } else {
+                    alert('Error uploading image. Please try again.');
                 }
-            }
-            xhr.send();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error uploading image. Please try again.');
+            });
         }
-        function selectImage(imageId) {
-            selectedImageId = imageId;
-            document.getElementById('selectedImageText').textContent = 'Selected Image ID: ' + imageId;
-        }
-        function findSimilar() {
-            if (selectedImageId) {
-                window.location.href = 'find_similar.php?image_id=' + selectedImageId;
-            } else {
-                alert('Please select an image first.');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadImages);
     </script>
 </body>
 </html>
