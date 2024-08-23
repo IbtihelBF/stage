@@ -1,7 +1,6 @@
 <?php
 include 'connect.php';
 session_start();
-<<<<<<< HEAD
 session_regenerate_id(true);
 
 if (isset($_POST['ajouter'])) {
@@ -47,7 +46,8 @@ if (isset($_POST['ajouter'])) {
             exit();
         } else {
             echo "Erreur lors de l'ajout de l'image : " . $stmt->error;
-=======
+            }
+        } 
 
 if (isset($_POST['ajouter'])) {
     $description = $_POST['description'];
@@ -69,18 +69,12 @@ if (isset($_POST['ajouter'])) {
             echo "Produit ajoutée avec succès";
         } else {
             echo "Erreur lors de l'ajout du produit : " . $stmt->error;
->>>>>>> cfcd2fb02ed42c2368c156fe92481b073c7ef124
         }
         $stmt->close();
     } else {
         echo "Erreur lors du téléchargement du fichier.";
-<<<<<<< HEAD
 }   
-} 
-=======
-    }
-}
->>>>>>> cfcd2fb02ed42c2368c156fe92481b073c7ef124
+} }
 ?>
 
 <!DOCTYPE html>
@@ -88,7 +82,6 @@ if (isset($_POST['ajouter'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     <title>Ajouter une Image</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -147,22 +140,5 @@ if (isset($_POST['ajouter'])) {
             <input type="file" name="image" required><br>
             <input type="submit" name="ajouter" value="Ajouter l'image">
         </form>
-    </div>
-=======
-    <title>Ajouter un produit</title>
-</head>
-
-<body>
-<section class="joinus">
-        <div class="joinus-heading">
-        <h1>Ajouter un produit</h1>
-        <form action="addimage.php" method="post" enctype="multipart/form-data">
-            <input type="text" name="description" placeholder="Description du produit"><br><br>
-            <input type="file" name="image" placeholder="Image du produit"><br><br>
-            <input type="submit" name="ajouter" value="Ajouter">
-        </form>
-        </div>
-</section>
->>>>>>> cfcd2fb02ed42c2368c156fe92481b073c7ef124
+  
 </body>
-</html>
