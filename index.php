@@ -43,7 +43,11 @@
         .add-image-button {
             position: absolute;
             top: 0.5rem;
+<<<<<<< HEAD
             right: 2rem; 
+=======
+            right: 2rem; /* Adjust as needed for positioning */
+>>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
             background: linear-gradient(135deg, #0066FF, #004080);
             color: #fff;
             padding: 0.5rem 1rem;
@@ -159,6 +163,7 @@
     </a>
     <h1>Image Gallery</h1>
     <div class="gallery" id="gallery">
+<<<<<<< HEAD
     <?php
         include 'connect.php';
         $result = $connect->query("SELECT * FROM produit");
@@ -173,6 +178,18 @@
         
     ?>
 
+=======
+        <?php
+        include 'connect.php';
+        $result = $connect->query("SELECT * FROM produit");
+        while($row = $result->fetch_assoc()) {
+            echo '<div class="gallery-item">';
+            echo '<img src="' . $row['image'] . '" alt="Image" onclick="selectImage(' . $row['ID'] . ')">';
+            echo '<button class="delete-btn" onclick="deleteImage(' . $row['ID'] . ')"><i class="fas fa-trash-alt"></i></button>';
+            echo '</div>';
+        }
+        ?>
+>>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
     </div>
     <div class="upload-section">
         <p>Upload an image to find similar ones:</p>
@@ -181,6 +198,7 @@
     </div>
 
     <script>
+<<<<<<< HEAD
         function deleteImage(imagePath) {
             if (confirm("Are you sure you want to delete this image?")) {
                 // Encode the image path to safely include it in the URL
@@ -191,6 +209,8 @@
         }
 
 
+=======
+>>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
         function uploadImage() {
             const fileInput = document.getElementById('imageUpload');
             if (fileInput.files.length === 0) {
@@ -206,6 +226,10 @@
             })
             .then(response => response.text())
             .then(data => {
+<<<<<<< HEAD
+=======
+                // Assuming upload_image.php returns an image ID or URL
+>>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
                 if (data) {
                     window.location.href = 'find_similar.php?image=' + encodeURIComponent(data);
                 } else {
