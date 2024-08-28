@@ -43,11 +43,7 @@
         .add-image-button {
             position: absolute;
             top: 0.5rem;
-<<<<<<< HEAD
             right: 2rem; 
-=======
-            right: 2rem; /* Adjust as needed for positioning */
->>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
             background: linear-gradient(135deg, #0066FF, #004080);
             color: #fff;
             padding: 0.5rem 1rem;
@@ -124,36 +120,6 @@
             color: #0066FF;
             opacity: 1;
         }
-        .upload-section {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            text-align: center;
-            color: #333;
-            max-width: 400px;
-        }
-        .upload-section input[type="file"] {
-            margin-top: 1rem;
-        }
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: #000080;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #0066FF;
-            transform: translateY(-2px);
-        }
-        .btn:active {
-            transform: translateY(0);
-        }
     </style>
 </head>
 <body>
@@ -163,7 +129,6 @@
     </a>
     <h1>Image Gallery</h1>
     <div class="gallery" id="gallery">
-<<<<<<< HEAD
     <?php
         include 'connect.php';
         $result = $connect->query("SELECT * FROM produit");
@@ -174,31 +139,10 @@
             echo '<button class="delete-btn" onclick="deleteImage(\'' . htmlspecialchars($row['image_path']) . '\')"><i class="fas fa-trash-alt"></i></button>';
             echo '</div>';
         }
-        
-        
     ?>
-
-=======
-        <?php
-        include 'connect.php';
-        $result = $connect->query("SELECT * FROM produit");
-        while($row = $result->fetch_assoc()) {
-            echo '<div class="gallery-item">';
-            echo '<img src="' . $row['image'] . '" alt="Image" onclick="selectImage(' . $row['ID'] . ')">';
-            echo '<button class="delete-btn" onclick="deleteImage(' . $row['ID'] . ')"><i class="fas fa-trash-alt"></i></button>';
-            echo '</div>';
-        }
-        ?>
->>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
-    </div>
-    <div class="upload-section">
-        <p>Upload an image to find similar ones:</p>
-        <input type="file" id="imageUpload" accept="image/*">
-        <button class="btn" onclick="uploadImage()">Find Similar Images</button>
     </div>
 
     <script>
-<<<<<<< HEAD
         function deleteImage(imagePath) {
             if (confirm("Are you sure you want to delete this image?")) {
                 // Encode the image path to safely include it in the URL
@@ -206,40 +150,6 @@
                 // Redirect to the PHP script with the image path as a parameter
                 window.location.href = 'delete_image.php?image_path=' + encodedImagePath;
             }
-        }
-
-
-=======
->>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
-        function uploadImage() {
-            const fileInput = document.getElementById('imageUpload');
-            if (fileInput.files.length === 0) {
-                alert('Please upload an image first.');
-                return;
-            }
-            const formData = new FormData();
-            formData.append('image', fileInput.files[0]);
-            
-            fetch('upload_image.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-<<<<<<< HEAD
-=======
-                // Assuming upload_image.php returns an image ID or URL
->>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
-                if (data) {
-                    window.location.href = 'find_similar.php?image=' + encodeURIComponent(data);
-                } else {
-                    alert('Error uploading image. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error uploading image. Please try again.');
-            });
         }
     </script>
 </body>
