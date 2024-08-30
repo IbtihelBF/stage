@@ -1,110 +1,95 @@
 import os
 import cv2
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.applications import VGG16
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from sklearn.metrics.pairwise import cosine_similarity
-<<<<<<< HEAD
-import matplotlib.pyplot as plt
+import mysql.connector
+import sys
 
-# pre-traned Model for d=features extraction
+# Ensure an argument is provided
+if len(sys.argv) < 2:
+    print("No argument provided")
+    sys.exit(1)
+
+uploaded_image_path = sys.argv[1]
+
+# Pre-trained model for feature extraction
 model = VGG16(weights='imagenet', include_top=False, pooling='avg')
-=======
-import matplotlib.pyplotas as plt
-
-# pre-traned Model for d=features extraction
-model = VVG16(weights='imagenet', include_top=False, pooling='avg')
->>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
 
 def load_and_process_image(image_path, target_size=(224, 224)):
-    # Load the image using OpenCV
     img = cv2.imread(image_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, target_size)
-    # image for the model
     img = preprocess_input(img)
-    img = np.expand_dims(img, axis=0) # add dimension
+    img = np.expand_dims(img, axis=0)
     return img
 
 def extract_features(image_path):
     img = load_and_process_image(image_path)
     features = model.predict(img)
-    return features
+    return features.flatten()  # Ensure the feature vector is a 1D array
 
-def calculate_similarity(features,database_features):
-    # calculate cosine similarity between features and database features
-    similarity = cosine_similarity(features, database_features)
-    return similarity
+def connect_db():
+    connection = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='', 
+        database='stage',
+    )
+    return connection
 
-def find_most_smilar_images(query_image_path, database_images_path, top_n=5):
-    # extract features of the query image
-    query_features = extract_features(query_image_path)
-    # extract features of the database images
-    database_features = []
-    for image_path in database_images_path:
-        features = extract_features(image_path)
-        database_features.append(features)
-    # stack database features into a single numpy array
-    database_features = np.stack(database_features)
-    # calculate similarities
-    similarities = calculate_similarity(query_features, database_features)
-    # get indices of top N most similar images
-    top_indices = np.argsort(similarities.flatten())[::-1][:top_n]
-    # return similar images paths
-    similar_images = [database_images_path[i] for i in top_indices]
-    return similar_images
-<<<<<<< HEAD
-
-# exp usage
-
-
-
-def extract_featuresDBPic():
-    database_image_folder = r"C:\xampp\htdocs\stage\image"
-    database_images_path = [os.path.join(database_image_folder, fname)for fname in os.listdir(database_image_folder)]
+def save_image_features_to_db(image_path, features):
+    conn = connect_db()
+    cursor = conn.cursor()
     
-    database_features = []
-    for pic in database_images_path:
-        feature=extract_features(pic)
-        print(feature)
+    features_str = ",".join(str(f) for f in features)
+    image_name = os.path.basename(image_path)
+    
+    query = "SELECT id FROM produit WHERE image_name = %s"
+    cursor.execute(query, (image_name,))
+    result = cursor.fetchone()
+    
+    if result:
+        update_query = "UPDATE produit SET image_features = %s WHERE image_name = %s"
+        cursor.execute(update_query, (features_str, image_name))
+    else:
+        insert_query = "INSERT INTO produit (image_name, image_features) VALUES (%s, %s)"
+        cursor.execute(insert_query, (image_name, features_str))
         
-        sql="update "
-        
-        
-        database_features.append(feature)
-        
-        
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-#query_image_path = 'C:\xampp\htdocs\stage\image\cit1.jpeg'
-#similar_images = find_most_smilar_images(query_image_path, database_images_path)
+def compare_uploaded_image_with_db(uploaded_image_path):
+    uploaded_features = extract_features(uploaded_image_path)
+    
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    query = "SELECT image_name, image_features FROM produit"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    
+    similarities = []
+    for image_name, features_str in results:
+        db_features = np.array([float(x) for x in features_str.split(",")])
+        similarity = cosine_similarity([uploaded_features], [db_features])[0][0]
+        similarities.append((image_name, similarity))
+    
+    similarities.sort(key=lambda x: x[1], reverse=True)
+    
+    cursor.close()
+    conn.close()
+    
+    return [image_name for image_name, similarity in similarities[:5]]
 
-#display
+def process_uploaded_image(uploaded_image_path):
+    similar_images = compare_uploaded_image_with_db(uploaded_image_path)
+    return similar_images
 
-extract_featuresDBPic()
-
-
-"""plt.figure(figsize=(12, 7))
-=======
-# exp usage
-database_image_folder = 'C:\xampp\htdocs\stage\image'
-database_images_path = [os.path.join(database_image_folder, fname)for fname in os.listdir(database_image_folder)]
-
-query_image_path = 'C:\xampp\htdocs\stage\image\cit1.jpeg'
-similar_images = find_most_smilar_images(query_image_path, database_images_path)
-
-#display
-plt.figure(figsize=(12, 7))
->>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
-for i, img_path in enumerate(similar_images):
-    img = cv2.imread(img_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    plt.suplot(1, len(similar_images), i+1)
-    plt.imshow(img)
-    plt.title("Similar Image {i+1}")
-    plt.axis('off')
-<<<<<<< HEAD
-    plt.show
-    """
-=======
-    plt.show
->>>>>>> d231883071f80c961e4deeca0547db29e21eb0a2
+if __name__ == "__main__":
+    similar_images = process_uploaded_image(uploaded_image_path)
+    for img in similar_images:
+        print(img)

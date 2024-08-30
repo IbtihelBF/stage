@@ -1,42 +1,11 @@
-<?php
-// Start PHP block for handling image upload
-$uploaded_images = [];
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
-    // Check if the file was uploaded without errors
-    if ($_FILES['image']['error'] == 0) {
-        $uploadDir = 'uploads/';
-        $uploadedFile = $uploadDir . basename($_FILES['image']['name']);
-
-        // Ensure the uploads directory exists
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
-
-        // Move the uploaded file to the designated directory
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadedFile)) {
-            // Simulate finding similar images (replace with your own logic)
-            $uploaded_images = [
-                $uploadedFile, // Show the uploaded image itself
-                'path/to/similar/image1.jpg',  // Example similar images
-                'path/to/similar/image2.jpg',
-                'path/to/similar/image3.jpg'
-            ];
-        } else {
-            echo '<script>alert("Failed to move the uploaded file.");</script>';
-        }
-    } else {
-        echo '<script>alert("Error during file upload.");</script>';
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Home Page - Image Search</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/py">
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Same CSS as before */
@@ -154,22 +123,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
         <p>Upload an image to find similar ones:</p>
         <form method="post" enctype="multipart/form-data">
             <input type="file" name="image" id="imageUpload" accept="image/*">
-            <button class="btn" type="submit">Find Similar Images</button>
+            <button id="findImagesButton">Find Similar Images</button>
+            <div id="output"></div>
         </form>
     </div>
+    <py-script>
+        # Start of the embedded Python code from lens.py
+        
+        def find_similar_images():
+            # Content from lens.py goes here.
+            # Assuming lens.py has a function to find similar images:
+            output = "Images found based on the logic in lens.py"
+            # Use pyscript to write output to the HTML element with id="output"
+            pyscript.write("output", output)
+        
+        # Bind the button click event to the find_similar_images function
+        findImagesButton = Element("findImagesButton")
+        findImagesButton.element.addEventListener("click", find_similar_images)
+        
+    </py-script>
 
     <!-- Results Section -->
     <div class="results-section" id="results">
         <h2>Similar Images:</h2>
         <div class="results-gallery" id="resultsGallery">
-            <!-- Display uploaded and similar images -->
-            <?php
-            if (!empty($uploaded_images)) {
-                foreach ($uploaded_images as $image) {
-                    echo "<img src='$image' alt='Similar Image'>";
-                }
+        <?php
+        if (!empty($uploaded_images)) {
+            foreach ($uploaded_images as $image) {
+                echo "<img src='$image' alt='Similar Image'>";
             }
-            ?>
+        }
+        // function runPythonScript($scriptPath) {
+        //     // Execute the Python script and capture the output
+        //     $output = shell_exec("python3 " . escapeshellarg($scriptPath));
+        //     return $output;
+        // }
+    
+        // // Check if the button is clicked
+        // if (isset($_POST['run_script'])) {
+        //     // Path to the Python script
+        //     $scriptPath = '/path/to/your/script.py';
+    
+        //     // Call the function to run the Python script
+        //     $output = runPythonScript($scriptPath);
+    
+        //     // Display the output
+        //     echo "<pre>$output</pre>";
+        // }
+        ?>
         </div>
     </div>
 </body>
