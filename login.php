@@ -15,15 +15,10 @@
             justify-content: center;
             align-items: center;
             color: #fff;
-        }
-        .background-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
+            background-image: url('https://as1.ftcdn.net/v2/jpg/03/03/57/00/1000_F_303570054_NXBYGgQABt5HPUkRgi9SjQVgMbD7iymv.jpg'); /* Use your desired background image URL */
+            background-size: cover;
+            background-position: center;
+            position: relative; /* To use absolute positioning for overlay */
         }
         .overlay {
             position: absolute;
@@ -127,10 +122,6 @@
     </style>
 </head>
 <body>
-    <video autoplay muted loop class="background-video">
-        <source src="https://media.istockphoto.com/id/1307214497/video/intelligent-cpu-processing-big-data-in-futuristic-computer.mp4?s=mp4-640x640-is&k=20&c=eqMjeWYMReROSUFLEtjn0Qrp96NJzYPfDyoM1SOeD80=" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
     <div class="overlay"></div>
     <div class="container">
         <h2>Login</h2>
@@ -144,7 +135,11 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit" class="btn">Login</button>
-            <div class="error" id="error"></div>
+            <?php
+            if (isset($_GET['error']) && $_GET['error'] == 1) {
+                echo '<div class="error" id="error">Incorrect username or password.</div>';
+            }
+            ?>
         </form>
     </div>
 
