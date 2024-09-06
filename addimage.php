@@ -65,8 +65,9 @@ if (isset($_POST['ajouter'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter une Image</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -74,19 +75,20 @@ if (isset($_POST['ajouter'])) {
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(to right, #141E30, #243B55);
-            color: #fff;
+            background: url('https://pikwizard.com/pw/medium/5845e1912e7fa2a5d45f913cc401bbca.jpg')no-repeat center center fixed ; 
+            background-size: cover;
             margin: 0;
         }
         .container {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 2rem;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5rem;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
         h1 {
-            font-family: 'Pacifico', cursive;
+            font-family: 'Roboto', sans-serif; /* Changed to Roboto for a clearer style */
+            font-weight: 700; /* Bold weight for better emphasis */
             margin-bottom: 1rem;
             color: #48cae4;
         }
@@ -115,14 +117,43 @@ if (isset($_POST['ajouter'])) {
 </head>
 <body>
     <div class="container">
-        <h1>Ajouter une Image</h1>
-        <form action="addimage.php" method="post" enctype="multipart/form-data">
-            <input type="text" name="description" placeholder="Description de l'image" required><br>
-            <input type="file" name="image" required><br>
-            <input type="submit" name="ajouter" value="Ajouter l'image">
+        <h1>Add Image</h1>
+        <input type="text" name="description" placeholder="Description de l'image" required><br>
+        <input type="text" name="name" placeholder="nom de l'image" required><br>
+        <input id="fileupload" type="file" name="fileupload" />
+        <!--<button id="upload-button" > Upload </button>-->
+        <form>
+        <input type="submit" name="ajouter" value="Ajouter l'image">
         </form>
     </div>
+
+
+
+    <script>
+
+$('form').submit(function() {
+        
+        let formData = new FormData(); 
+        formData.append("file", fileupload.files[0]);
+        $.ajax({
+          url: 'upload.php',
+          type: 'POST',
+          data: formData,
+          async: true,
+          cache: false,
+          contentType: false,
+          enctype: 'multipart/form-data',
+          processData: false,
+          beforeSend: function () {
+           
+          },
+          success: function (response) {
+            window.location.href = "index.php";
+          }
+       });
+       return false;
+    });
+
+  </script>
 </body>
 </html>
- 
-</body>
