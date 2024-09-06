@@ -1,38 +1,3 @@
-<?php
-// Start PHP block for handling image upload
-$uploaded_images = [];
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
-    // Check if the file was uploaded without errors
-    if ($_FILES['image']['error'] == 0) {
-        $uploadDir = 'uploads/';
-        $uploadedFile = $uploadDir . basename($_FILES['image']['name']);
-
-        // Ensure the uploads directory exists
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
-
-        // Move the uploaded file to the designated directory
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadedFile)) {
-            // Execute the Python script to find similar images
-            $command = escapeshellcmd("python lens.py " . escapeshellarg($uploadedFile));
-            $output = shell_exec($command);
-
-            // Check if the Python script returned any output
-            if ($output) {
-                $uploaded_images = explode("\n", trim($output)); // Split the output into an array
-            } else {
-                echo '<script>alert("Failed to find similar images.");</script>';
-            }
-        } else {
-            echo '<script>alert("Failed to move the uploaded file.");</script>';
-        }
-    } else {
-        echo '<script>alert("Error during file upload.");</script>';
-    }
-}
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -53,15 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
             justify-content: flex-start;
             background: url('https://i.pinimg.com/564x/ab/a7/78/aba778a6c37f450634e904cd35f14be7.jpg') no-repeat center center fixed;
             background-size: cover;
-            color: #000080; /* Dark blue color for the text */
-            position: relative; /* Add this line to position the logo */
+            color: #000080;
+            position: relative;
         }
         .logo {
-            position: absolute; /* Use absolute positioning */
-            top: 10px; /* Position from the top */
-            left: 10px; /* Position from the left */
-            width: 100px; /* Set a width for the logo */
-            height: auto; /* Maintain aspect ratio */
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 100px;
+            height: auto;
         }
         .login-button {
             position: absolute;
@@ -88,22 +53,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
             font-family: 'Arial', cursive;
             text-align: center;
             margin-top: 2rem;
-            color: #000080; /* Dark blue color for the title */
+            color: #000080;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
         .upload-section {
             margin-top: 1rem;
             padding: 5rem;
-            background: rgba(255, 255, 255, 0.2); /* More transparent to enhance blur effect */
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             text-align: center;
-            color: #000080; /* Dark blue color for the upload section text */
-            font-weight: bold; /* Make text bold */
-            font-size: 1.2rem; /* Increase font size */
+            color: #000080;
+            font-weight: bold;
+            font-size: 1.2rem;
             max-width: 400px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6.1px); /* Apply blur effect */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* Add a border for a more professional look */
+            backdrop-filter: blur(6.1px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .upload-section input[type="file"] {
             margin-top: 2rem;
@@ -135,10 +100,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
             background: rgba(0, 0, 0, 0.45);
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            color: #000080; /* Dark blue color for the results section text */
+            color: #000080;
         }
         .results-section h2 {
-            color: #fff; /* White color for the "Similar Images" text */
+            color: #fff;
         }
         .results-gallery {
             display: grid;
@@ -159,39 +124,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
     </style>
+    <link rel="stylesheet" href="style.css"></link>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 </head>
 <body>
-    <!-- Sartex Logo -->
     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY2AzsUWfke_7c91m69-4rpsmP_-fSzRndlg&s" alt="Sartex Logo" class="logo">
 
-    <!-- Login Button -->
     <a href="login.php" class="login-button"><i class="fas fa-sign-in-alt"></i> Login</a>
 
-    <!-- Page Title -->
     <h1>Image Similarity Search</h1>
 
-    <!-- Upload Section -->
     <div class="upload-section">
         <p>Upload an image to find similar ones:</p>
-        <form method="post" enctype="multipart/form-data">
-            <input type="file" name="image" id="imageUpload" accept="image/*">
-            <button class="btn" type="submit">Find Similar Images</button>
+        <input id="fileupload" type="file" name="fileupload" />
+        <!--<button id="upload-button" > Upload </button>-->
+
+        <form>
+        <input type="submit" value="submit"/> 
         </form>
+       
+
+        
+    <!--<form method="post" action="upload" enctype="multipart/form-data">
+            <input type="file" name="image" id="imageUpload" accept="image/*">
+            <input type="submit" >Find Similar Images</input>
+     </form> -->
     </div>
 
-    <!-- Results Section -->
     <div class="results-section" id="results">
         <h2>Similar Images:</h2>
         <div class="results-gallery" id="resultsGallery">
-            <!-- Display uploaded and similar images -->
-            <?php
-            if (!empty($uploaded_images)) {
-                foreach ($uploaded_images as $image) {
-                    echo "<img src='$image' alt='Similar Image'>";
-                }
-            }
-            ?>
+            
         </div>
     </div>
+<script>
+
+$('form').submit(function() {
+        
+        
+        //$('#resultsGallery').addClass("loader");
+        let formData = new FormData(); 
+        formData.append("file", fileupload.files[0]);
+        
+        $.ajax({
+          url: 'search.php',
+          type: 'POST',
+          data: formData,
+          async: true,
+          cache: false,
+          contentType: false,
+          enctype: 'multipart/form-data',
+          processData: false,
+          beforeSend: function () {
+            $('#resultsGallery').html("<div class='loader'></div>");
+          },
+          success: function (response) {
+            $('#resultsGallery').html(response);
+             
+          }
+       });
+       return false;
+    });
+
+  </script>
 </body>
+
 </html>
