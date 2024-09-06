@@ -15,7 +15,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: url('https://st2.depositphotos.com/1579454/10998/i/450/depositphotos_109988168-stock-photo-abstract-technology-background-3d-render.jpg') no-repeat center center fixed;
+            background: url('https://pikwizard.com/pw/medium/5845e1912e7fa2a5d45f913cc401bbca.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
         }
@@ -70,10 +70,11 @@
             transform: scale(1);
         }
         h1 {
-            font-family: 'Pacifico', cursive;
+            font-family: 'Arial', cursive;
             text-align: center;
             margin-bottom: 2rem;
-            color: #48cae4;
+            color: #00BFFF; /* Light blue color */
+            font-weight: 900; /* Extra bold */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
         .gallery {
